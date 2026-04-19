@@ -48,19 +48,19 @@ export INTENTION_ENGINE_URL=http://localhost:8080
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| GET | `/healthz` | Liveness probe |
-| POST | `/mission/new` | Extract MissionSpec from raw prompt; returns `{mission_hash, spec}` |
-| GET | `/mission/:agent_id` | Current mission envelope (with lineage) |
-| PATCH | `/mission/:agent_id` | Amend assumption / constraint / deliverable; writes new child envelope |
-| POST | `/events/tool-call` | Record a tool call; may trigger drift engine |
-| POST | `/state/append` | Append a decision/assumption/open-question (wrapped with provenance) |
-| GET | `/state/:agent_id` | Current WorkingState |
-| GET | `/drift/:agent_id` | Stream of DriftFindings for an agent |
-| GET | `/lineage/:agent_id` | Full mission+compaction chain |
-| POST | `/memory/check` | Retrieval-time contradiction check (<50ms target) |
+| GET | `/healthz` | Liveness probe + ANCHOR_HOME |
+| GET | `/missions` | List all agents with a current mission |
+| POST | `/mission/new` | Extract MissionSpec from raw prompt; returns envelope + trace URL |
+| GET | `/mission/{agent_id}` | Current mission envelope |
+| PATCH | `/mission/{agent_id}` | Amend assumption/constraint/deliverable/subgoal/objective; writes child envelope |
+| POST | `/state/append` | Append decision/assumption/open_question (wrapped with provenance) |
+| GET | `/state/{agent_id}` | Current WorkingState |
+| POST | `/tool-call` | Record a tool call; may trigger drift tick |
+| GET | `/findings/{agent_id}` | Drift findings log |
+| GET | `/findings/stream?agent_id=X` | SSE: high-severity findings (≥ 0.6) live |
+| POST | `/memory/check` | Retrieval-time contradiction check (< 50ms target) |
 | POST | `/compact/snapshot` | PreCompact hook writes a compaction envelope |
-| GET | `/compact/latest/:agent_id` | Resume-time rehydration payload |
-| POST | `/events/agent-stop` | Finalize the Langfuse trace |
+| GET | `/compact/resume/{agent_id}` | Post-compact rehydration digest |
 
 ## Architecture
 
@@ -88,17 +88,29 @@ See `docs/ARCHITECTURE.md` for full detail. Design brief lives in the companion 
 
 ## Integration with Claude Code
 
-Two tiny hooks (`hooks/pre-compact.sh` and `hooks/tool-call.sh`) wire anchord into the Claude Code harness. After installing:
+Two hooks wire anchord into the Claude Code harness (`hooks/pre-compact.sh`, `hooks/tool-call.sh`). Add to `~/.claude/settings.json`:
 
-```bash
-/anchor show                 # current mission
-/anchor amend "add constraint: budget ≤ $5"
-/anchor check-now            # force a drift pass
-/anchor resume               # post-compact rehydration
-/anchor stop                 # finalize the trace
+```json
+{
+  "hooks": {
+    "PreCompact": [{"matcher": "*", "hooks": [{"type": "command", "command": "bash ~/anchor/hooks/pre-compact.sh"}]}],
+    "PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "bash ~/anchor/hooks/tool-call.sh"}]}]
+  }
+}
 ```
 
-The skill at `skills/anchor.md` is copied into `~/.claude/commands/` by the installer.
+Then use the client:
+```bash
+anchor status                                    # daemon health + mission list
+anchor mission new sonnet-alpha "<prompt>"       # pin a mission
+anchor mission show sonnet-alpha                 # current envelope + lineage
+anchor state show sonnet-alpha                   # decisions + assumptions + open questions
+anchor findings sonnet-alpha                     # drift findings
+anchor snapshot sonnet-alpha                     # compaction envelope
+anchor resume sonnet-alpha                       # post-compact digest
+```
+
+The skill at `skills/anchor/SKILL.md` can be copied into `~/.claude/skills/` so `/anchor` works inline.
 
 ## License
 
