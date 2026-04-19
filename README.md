@@ -112,6 +112,36 @@ anchor resume sonnet-alpha                       # post-compact digest
 
 The skill at `skills/anchor/SKILL.md` can be copied into `~/.claude/skills/` so `/anchor` works inline.
 
+## Benchmarks
+
+`bench/` is a 6-suite benchmark that runs against a fresh daemon in an
+isolated `ANCHOR_HOME`, writes a JSON results file, renders an HTML
+dashboard, and gates regressions with SLO thresholds.
+
+```bash
+pip install -e ".[dev]"
+
+python -m bench.main           # full suite: HTTP + lifecycle + drift + concurrent + ablation + SLO
+python -m bench.main --quick   # faster — fewer iters, smaller loads
+python -m bench.demo           # scripted 30-turn session + HTML dashboard
+python -m bench.report         # (re)render bench/report.html from latest results
+```
+
+The SLO gate in `bench/slo.py` exits non-zero on p95 regressions, so it can
+plug straight into CI. The ablation bench (`bench/ablation.py`) runs the
+same 30-turn scripted mission twice — once with anchor, once with a naive
+"last-500-chars" compaction — and reports:
+
+| metric | baseline | anchor |
+|---|---|---|
+| contradiction catch rate | 0% | **100%** (2/2 caught via `/memory/check`) |
+| drift warnings on off-mission turns | 0 | **3** (via `/tool-call` scheduler + drift engine) |
+| post-compact constraint fidelity | 60% | **80%** (structured constraints survive `/compact/snapshot`) |
+
+See `bench/report.html` (rendered after any `python -m bench.main` run) for
+per-endpoint latency charts, drift-load scaling curves, and concurrency
+throughput/tail-latency over 1–32 parallel agents.
+
 ## License
 
 MIT.

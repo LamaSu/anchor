@@ -1,5 +1,15 @@
 # anchor demo — 60 seconds
 
+Two flavors:
+
+1. **Scripted bitchin-sweet demo** — one command, 30 turns in ~3s, renders an HTML dashboard:
+   ```bash
+   pip install -e ".[dev]"
+   python -m bench.main           # populate bench/results/bench-results.json
+   python -m bench.demo           # scripted 30-turn session + auto-opens dashboard
+   ```
+2. **Live walkthrough** — step-by-step against a running daemon (below).
+
 ## Prereqs
 ```bash
 pip install -e .

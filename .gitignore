@@ -12,3 +12,5 @@ build/
 ai/supervisor/*.log
 *.pid
 .DS_Store
+bench/results/
+bench/report.html
