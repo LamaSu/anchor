@@ -1,0 +1,33 @@
+{
+  "task": "build a repo for anchor and build anchor completely and then push",
+  "classification": "build",
+  "started_at": "2026-04-19T00:40:41Z",
+  "updated_at": "2026-04-19T00:40:41Z",
+  "status": "running",
+  "current_phase": "Phase 0: Scaffold",
+  "progress_pct": 5,
+  "repo_path": "/c/Users/globa/anchor",
+  "remote_target": "https://github.com/LamaSu/anchor",
+  "phases": [
+    {"id": 0, "name": "Scaffold", "status": "running", "started_at": "2026-04-19T00:40:41Z", "notes": "Greenfield build; spec already in anchor-brief.md + anchor-memory-integration-plan.md"},
+    {"id": 1, "name": "Assessment", "status": "pending", "notes": "Task = build (classification); atomic at repo level but decomposed internally by anchor-brief wave structure"},
+    {"id": 2, "name": "Wheel-Scout", "status": "skipped", "notes": "anchor-brief.md IS the landscape report — novel integration of intention-engine + Langfuse + typed invariants; no existing equivalent"},
+    {"id": 5, "name": "Execute", "status": "pending"},
+    {"id": 6, "name": "Integrate + Push", "status": "pending"}
+  ],
+  "agents": [],
+  "waves": [
+    {"id": 1, "name": "Daemon core + memory integration", "status": "pending", "tasks": ["schemas", "store", "server", "lineage", "telemetry", "scheduler", "extract", "drift", "compact", "memory_check"]},
+    {"id": 2, "name": "Adapters", "status": "pending", "tasks": ["pre-compact hook", "tool-call hook", "/anchor skill"]},
+    {"id": 3, "name": "Benchmark + demo", "status": "pending", "tasks": ["bench.py skeleton", "demo.md"]}
+  ],
+  "events": [
+    {"time": "2026-04-19T00:40:41Z", "type": "phase_start", "message": "Phase 0: created ~/anchor, git init, directory scaffold"}
+  ],
+  "errors": [],
+  "decisions": [
+    {"time": "2026-04-19T00:40:41Z", "text": "Skip wheel-scout: anchor-brief.md + intention-engine integration IS the landscape; no competing typed-invariant drift system exists"},
+    {"time": "2026-04-19T00:40:41Z", "text": "Author core modules inline (schemas, store, lineage, telemetry, server, scheduler, compact, memory_check); delegate extract.py + drift.py to one implementer — those need LLM prompt engineering and algorithmic depth"}
+  ],
+  "smoke_test": {"verdict": "pending", "iterations": 0, "checks_passed": 0, "checks_failed": 0, "heal_attempts": 0, "report_path": "ai/supervisor/smoke-test-report.json"}
+}

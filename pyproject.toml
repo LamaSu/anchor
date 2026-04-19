@@ -1,0 +1,53 @@
+[project]
+name = "anchor"
+version = "0.1.0"
+description = "Typed mission invariants + drift-checked working state + Merkle-chained provenance for agent runs."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Anchor contributors"}]
+keywords = ["agents", "drift-detection", "provenance", "merkle", "langfuse", "claude"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "pydantic>=2.5",
+  "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+telemetry = ["langfuse>=2.0"]
+extract = ["anthropic>=0.40"]
+semantic = ["intention-engine"]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.5",
+]
+all = ["anchor[telemetry,extract,semantic,dev]"]
+
+[project.scripts]
+anchord = "anchord.__main__:main"
+anchor = "anchord.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/LamaSu/anchor"
+Issues = "https://github.com/LamaSu/anchor/issues"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["anchord*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --tb=short"
